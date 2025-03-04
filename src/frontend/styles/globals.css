@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-rgb: 248, 250, 252;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-rgb: 15, 23, 42;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+  font-family: 'Inter', sans-serif;
+}
+
+/* Kindle-like reader styles */
+.reader-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #f8f9fa;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.dark .reader-container {
+  background-color: #1e293b;
+  color: #e2e8f0;
+}
+
+.reader-content {
+  font-family: 'Merriweather', serif;
+  font-size: 1.125rem;
+  line-height: 1.8;
+  padding: 1rem;
+}
+
+.reader-controls {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 0;
+  border-top: 1px solid #e2e8f0;
+  margin-top: 2rem;
+}
+
+.dark .reader-controls {
+  border-top: 1px solid #334155;
+}
+
+/* Book card styles */
+.book-card {
+  transition: transform 0.2s ease-in-out;
+}
+
+.book-card:hover {
+  transform: translateY(-5px);
+}
