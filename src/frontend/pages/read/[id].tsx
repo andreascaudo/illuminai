@@ -45,6 +45,14 @@ const ReadPage: React.FC = () => {
   // TXT specific state
   const [textContent, setTextContent] = useState<string | null>(null);
   
+  // Client-side only flag
+  const [isClient, setIsClient] = useState(false);
+  
+  // Set client-side flag once component mounts
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+  
   // Reader settings
   const [fontSize, setFontSize] = useState<number>(16);
   const [showSettings, setShowSettings] = useState<boolean>(false);
@@ -106,6 +114,24 @@ const ReadPage: React.FC = () => {
     fetchBook();
   }, [id, router]);
   
+  // PDF document loading handler
+  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
+    setNumPages(numPages);
+  };
+
+  // PDF page navigation
+  const goToPreviousPage = () => {
+    if (pageNumber > 1) {
+      setPageNumber(pageNumber - 1);
+    }
+  };
+
+  const goToNextPage = () => {
+    if (numPages && pageNumber < numPages) {
+      setPageNumber(pageNumber + 1);
+    }
+  };
+  
   // Add keyboard shortcuts for navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -141,24 +167,6 @@ const ReadPage: React.FC = () => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [book, pageNumber, numPages, showSettings, goToPreviousPage, goToNextPage]);
-
-  // PDF document loading handler
-  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
-    setNumPages(numPages);
-  };
-
-  // PDF page navigation
-  const goToPreviousPage = () => {
-    if (pageNumber > 1) {
-      setPageNumber(pageNumber - 1);
-    }
-  };
-
-  const goToNextPage = () => {
-    if (numPages && pageNumber < numPages) {
-      setPageNumber(pageNumber + 1);
-    }
-  };
 
   // Render reader based on book format
   const renderReader = () => {
@@ -357,25 +365,7 @@ const ReadPage: React.FC = () => {
     );
   };
 
-  if (loading) {
-    return (
-      <Layout requireAuth>
-        <div className="flex justify-center py-20">
-          <div className="w-12 h-12 border-t-4 border-primary-500 border-solid rounded-full animate-spin"></div>
-        </div>
-      </Layout>
-    );
-  }
-
-  if (!book) {
-    return (
-      <Layout requireAuth>
-        <div className="text-center py-20">
-          <h2 className="text-xl font-medium text-gray-900 dark:text-white mb-4">Book not found</h2>
-        </div>
-      </Layout>
-    );
-  }
+  // We'll handle these conditions in the main render function using the isClient flag
 
   // Render keyboard shortcuts helper
   const renderKeyboardShortcuts = () => {
@@ -441,47 +431,61 @@ const ReadPage: React.FC = () => {
   };
 
   return (
-    <Layout title={`Reading: ${book.title} - Illuminai`} requireAuth>
-      {renderSettings()}
-      {renderKeyboardShortcuts()}
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="flex justify-between items-center mb-4">
-          <button
-            onClick={() => router.push('/library')}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
-          >
-            <FiArrowLeft className="mr-2 -ml-1 h-5 w-5" />
-            Back to Library
-          </button>
+    <Layout title={book ? `Reading: ${book.title} - Illuminai` : 'Loading Book - Illuminai'} requireAuth>
+      {isClient && (
+        <>
+          {renderSettings()}
+          {renderKeyboardShortcuts()}
           
-          <div className="flex space-x-2">
-            <button
-              onClick={() => setShowKeyboardShortcuts(true)}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
-            >
-              <span className="mr-2">⌨️</span>
-              Shortcuts
-            </button>
-            <button
-              onClick={() => setShowSettings(!showSettings)}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
-            >
-              <FiSettings className="mr-2 -ml-1 h-5 w-5" />
-              Settings
-            </button>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex justify-between items-center mb-4">
+              <button
+                onClick={() => router.push('/library')}
+                className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
+              >
+                <FiArrowLeft className="mr-2 -ml-1 h-5 w-5" />
+                Back to Library
+              </button>
+              
+              {book && (
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => setShowKeyboardShortcuts(true)}
+                    className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  >
+                    <span className="mr-2">⌨️</span>
+                    Shortcuts
+                  </button>
+                  <button
+                    onClick={() => setShowSettings(!showSettings)}
+                    className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  >
+                    <FiSettings className="mr-2 -ml-1 h-5 w-5" />
+                    Settings
+                  </button>
+                </div>
+              )}
+            </div>
+            
+            {book && (
+              <div className="mb-6">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{book.title}</h1>
+                {book.author && (
+                  <p className="text-gray-600 dark:text-gray-400">by {book.author}</p>
+                )}
+              </div>
+            )}
+            
+            {book && renderReader()}
           </div>
+        </>
+      )}
+
+      {!isClient && (
+        <div className="flex justify-center py-20">
+          <div className="w-12 h-12 border-t-4 border-primary-500 border-solid rounded-full animate-spin"></div>
         </div>
-        
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{book.title}</h1>
-          {book.author && (
-            <p className="text-gray-600 dark:text-gray-400">by {book.author}</p>
-          )}
-        </div>
-        
-        {renderReader()}
-      </div>
+      )}
     </Layout>
   );
 };
