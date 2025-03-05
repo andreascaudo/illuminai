@@ -11,3 +11,8 @@ ebooklib==0.17.1
 PyPDF2==3.0.1
 python-dotenv==1.0.0
 email-validator==2.0.0
+cryptography==41.0.7
+tiktoken==0.5.2
+openai==1.6.1
+anthropic==0.8.1
+beautifulsoup4==4.12.2
