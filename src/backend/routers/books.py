@@ -174,3 +174,61 @@ def delete_book(
     db.commit()
 
     return None
+
+
+from fastapi.responses import FileResponse, StreamingResponse
+import io
+
+@router.get("/{book_id}/content")
+async def get_book_content(
+    book_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Get the content of a book file
+    """
+    book = db.query(Book).filter(Book.id == book_id,
+                               Book.user_id == current_user.id).first()
+    if not book:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Book not found"
+        )
+    
+    if not os.path.exists(book.file_path):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Book file not found"
+        )
+    
+    # Different responses based on file format
+    if book.format == "txt":
+        # For text files, read the content and return it
+        try:
+            with open(book.file_path, "r", encoding="utf-8") as f:
+                content = f.read()
+            return {"content": content}
+        except UnicodeDecodeError:
+            # Try with a different encoding if UTF-8 fails
+            with open(book.file_path, "r", encoding="latin-1") as f:
+                content = f.read()
+            return {"content": content}
+    else:
+        # For binary files (epub, pdf), serve the file directly
+        return FileResponse(
+            book.file_path,
+            filename=f"{book.title}.{book.format}",
+            media_type=get_media_type(book.format)
+        )
+
+def get_media_type(format: str) -> str:
+    """
+    Get the appropriate media type for a given file format
+    """
+    media_types = {
+        "epub": "application/epub+zip",
+        "pdf": "application/pdf",
+        "txt": "text/plain"
+    }
+    return media_types.get(format, "application/octet-stream")

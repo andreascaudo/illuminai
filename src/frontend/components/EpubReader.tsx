@@ -3,9 +3,10 @@ import { ReactReader } from 'react-reader';
 
 interface EpubReaderProps {
   url: string;
+  fontSize?: number;
 }
 
-const EpubReader: React.FC<EpubReaderProps> = ({ url }) => {
+const EpubReader: React.FC<EpubReaderProps> = ({ url, fontSize = 16 }) => {
   const [location, setLocation] = useState<string | number>(0);
   const [size, setSize] = useState<{ width: number; height: number }>({
     width: 600,
@@ -70,6 +71,13 @@ const EpubReader: React.FC<EpubReaderProps> = ({ url }) => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
+  
+  // Update font size when it changes
+  useEffect(() => {
+    if (renditionRef.current) {
+      renditionRef.current.themes.fontSize(`${fontSize}px`);
+    }
+  }, [fontSize]);
 
   return (
     <div 
@@ -85,7 +93,7 @@ const EpubReader: React.FC<EpubReaderProps> = ({ url }) => {
           renditionRef.current = rendition;
           
           // Set font size
-          rendition.themes.fontSize('16px');
+          rendition.themes.fontSize(`${fontSize}px`);
           
           // Add swipe events for page turning
           rendition.on('touchstart', (e: any) => {
