@@ -9,8 +9,11 @@ load_dotenv()
 # Get database URL from environment variables
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/illuminai")
 
+# Configure SQLite-specific connection parameters if needed
+connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
+
 # Create engine
-engine = create_engine(DATABASE_URL)
+engine = create_engine(DATABASE_URL, connect_args=connect_args)
 
 # Create session factory
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

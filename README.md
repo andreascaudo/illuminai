@@ -14,7 +14,7 @@ An open-source e-book reading platform that allows users to upload, manage, and 
 
 - **Frontend**: React.js with Next.js
 - **Backend**: Python with FastAPI
-- **Database**: PostgreSQL
+- **Database**: SQLite (with PostgreSQL as an optional alternative)
 - **Authentication**: JWT-based authentication
 - **File Storage**: Local storage with S3 migration path
 
@@ -23,8 +23,7 @@ An open-source e-book reading platform that allows users to upload, manage, and 
 ### Prerequisites
 
 - Node.js (v16+)
-- Python (v3.9+)
-- PostgreSQL
+- Python (v3.9-3.13)
 - Docker (optional, for containerization)
 
 ### Installation

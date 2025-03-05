@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+import os
 
-from routers import users, books, auth
 from database.database import engine, Base
+from routers import users, books, auth
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -23,13 +24,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Create uploads directory if it doesn't exist
+uploads_dir = os.path.join(os.getcwd(), "uploads")
+os.makedirs(uploads_dir, exist_ok=True)
+
 # Include routers
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(users.router, prefix="/api/users", tags=["Users"])
 app.include_router(books.router, prefix="/api/books", tags=["Books"])
 
 # Mount static files
-# app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 @app.get("/api/health")
 def health_check():

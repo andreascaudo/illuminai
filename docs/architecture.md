@@ -8,7 +8,7 @@ Illuminai is built with a modern stack focused on performance, scalability, and 
 
 - **Frontend**: React.js with Next.js for SSR and optimized rendering
 - **Backend**: Python with FastAPI for a high-performance API
-- **Database**: PostgreSQL for reliable relational data storage
+- **Database**: SQLite for local development (PostgreSQL for production)
 - **Authentication**: JWT-based token authentication
 - **File Storage**: Local file storage (with AWS S3 as a planned alternative)
 
@@ -18,7 +18,7 @@ Illuminai is built with a modern stack focused on performance, scalability, and 
 ┌────────────────┐     ┌────────────────┐     ┌────────────────┐
 │                │     │                │     │                │
 │    Frontend    │◄────┤     Backend    │◄────┤   Database     │
-│   (Next.js)    │     │   (FastAPI)    │     │  (PostgreSQL)  │
+│   (Next.js)    │     │   (FastAPI)    │     │  (SQLite/PG)   │
 │                │────►│                │────►│                │
 └────────────────┘     └───────┬────────┘     └────────────────┘
                               │
@@ -63,7 +63,7 @@ Key features:
 - File upload handling and validation
 - Database migrations with Alembic
 
-### Database (PostgreSQL)
+### Database
 
 The database schema consists of the following main tables:
 
@@ -72,6 +72,8 @@ The database schema consists of the following main tables:
 
 Relationships:
 - One-to-many relationship between users and books
+
+SQLite is used for development, while PostgreSQL is recommended for production deployments.
 
 ### File Storage
 
@@ -110,7 +112,7 @@ For the initial implementation, files are stored locally:
 ## Scalability Considerations
 
 - **Horizontal Scaling**: Backend can be scaled horizontally by deploying multiple instances
-- **Database**: PostgreSQL can be scaled through replication
+- **Database**: Migrate to PostgreSQL for production with more concurrent users
 - **File Storage**: Migration path to cloud storage (S3) for unlimited scaling
 - **Caching**: Future implementation of Redis for caching frequently accessed data
 

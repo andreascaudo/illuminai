@@ -22,11 +22,21 @@ const Library: React.FC = () => {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const response = await axios.get('/api/books');
+        const token = localStorage.getItem('token');
+        if (!token) {
+          toast.error('Please log in to access your library');
+          setLoading(false);
+          return;
+        }
+        toast.info(`${process.env.NEXT_PUBLIC_API_URL}/api/books`);
+        console.log('API URL:', process.env.NEXT_PUBLIC_API_URL);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/books`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setBooks(response.data);
       } catch (error) {
         console.error('Error fetching books:', error);
-        toast.error('Failed to load your library');
+        toast.error('Failed to load your library: ' + error);
       } finally {
         setLoading(false);
       }
