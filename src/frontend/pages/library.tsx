@@ -28,15 +28,13 @@ const Library: React.FC = () => {
           setLoading(false);
           return;
         }
-        toast.info(`${process.env.NEXT_PUBLIC_API_URL}/api/books`);
-        console.log('API URL:', process.env.NEXT_PUBLIC_API_URL);
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/books`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setBooks(response.data);
       } catch (error) {
         console.error('Error fetching books:', error);
-        toast.error('Failed to load your library: ' + error);
+        toast.error('Failed to load your library');
       } finally {
         setLoading(false);
       }

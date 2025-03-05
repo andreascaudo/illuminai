@@ -61,7 +61,6 @@ def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        print(f"Token: {token}")
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
 
         username: str = payload.get("sub")
@@ -69,11 +68,6 @@ def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-
-    print(f"Username: {username}")
-    print(f"SECRET_KEY: {SECRET_KEY}")
-    print(f"ALGORITHM: {ALGORITHM}")
-    print(f"Payload: {payload}")
 
     user = db.query(User).filter(User.username == username).first()
 
