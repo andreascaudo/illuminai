@@ -4,12 +4,12 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { FiArrowLeft, FiArrowRight, FiSettings, FiBookOpen } from 'react-icons/fi';
-import { pdfjs } from 'react-pdf';
 import { Document, Page } from 'react-pdf';
 import dynamic from 'next/dynamic';
+import { pdfjs } from 'react-pdf';
 
 // Initialize PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js`;
 
 // Dynamically import the EPUB reader component
 const EpubReader = dynamic(() => import('@/components/EpubReader'), {
