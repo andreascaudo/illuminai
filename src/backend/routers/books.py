@@ -214,8 +214,21 @@ async def get_book_content(
             with open(book.file_path, "r", encoding="latin-1") as f:
                 content = f.read()
             return {"content": content}
+    elif book.format == "epub":
+        # For EPUB files, add cache control headers to prevent caching
+        headers = {
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0"
+        }
+        return FileResponse(
+            book.file_path,
+            filename=f"{book.title}.{book.format}",
+            media_type=get_media_type(book.format),
+            headers=headers
+        )
     else:
-        # For binary files (epub, pdf), serve the file directly
+        # For other binary files (e.g., pdf), serve the file directly
         return FileResponse(
             book.file_path,
             filename=f"{book.title}.{book.format}",
@@ -232,3 +245,102 @@ def get_media_type(format: str) -> str:
         "txt": "text/plain"
     }
     return media_types.get(format, "application/octet-stream")
+
+
+import zipfile
+from fastapi.responses import Response
+from pathlib import Path
+
+# Explicitly allow open access to EPUB internal files
+@router.get("/{book_id}/{file_path:path}", dependencies=[])
+async def get_epub_file(
+    book_id: int,
+    file_path: str,
+    db: Session = Depends(get_db),
+):
+    """
+    Serve internal files from EPUB archive
+    """
+    # Get the book without user verification for EPUB internal files
+    book = db.query(Book).filter(Book.id == book_id).first()
+    if not book:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Book not found"
+        )
+    
+    if not os.path.exists(book.file_path):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Book file not found"
+        )
+    
+    # Only serve internal files from EPUB
+    if book.format != "epub":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Only EPUB format supports accessing internal files"
+        )
+    
+    try:
+        with zipfile.ZipFile(book.file_path, 'r') as epub_file:
+            # Check if the requested file exists in the EPUB
+            try:
+                file_info = epub_file.getinfo(file_path)
+                file_content = epub_file.read(file_path)
+            except KeyError:
+                # Log the error for debugging
+                logger.error(f"File {file_path} not found in EPUB book {book_id}")
+                logger.error(f"Available files: {epub_file.namelist()}")
+                
+                # Try to find a case-insensitive match
+                lowercased_path = file_path.lower()
+                for name in epub_file.namelist():
+                    if name.lower() == lowercased_path:
+                        file_content = epub_file.read(name)
+                        file_path = name  # Use the correct case for content type determination
+                        break
+                else:
+                    raise HTTPException(
+                        status_code=status.HTTP_404_NOT_FOUND,
+                        detail=f"File {file_path} not found in EPUB"
+                    )
+            
+            # Determine content type based on file extension
+            extension = Path(file_path).suffix.lower().lstrip('.')
+            content_type = {
+                'html': 'text/html',
+                'xhtml': 'application/xhtml+xml',
+                'htm': 'text/html',
+                'css': 'text/css',
+                'js': 'application/javascript',
+                'xml': 'application/xml',
+                'jpg': 'image/jpeg',
+                'jpeg': 'image/jpeg',
+                'png': 'image/png',
+                'gif': 'image/gif',
+                'svg': 'image/svg+xml',
+                'ttf': 'font/ttf',
+                'otf': 'font/otf',
+                'woff': 'font/woff',
+                'woff2': 'font/woff2',
+                'ncx': 'application/x-dtbncx+xml',
+                'opf': 'application/oebps-package+xml',
+            }.get(extension, 'application/octet-stream')
+            
+            # Set cache control headers
+            headers = {
+                "Cache-Control": "public, max-age=3600",
+                "Access-Control-Allow-Origin": "*"
+            }
+            
+            return Response(
+                content=file_content, 
+                media_type=content_type,
+                headers=headers
+            )
+    except zipfile.BadZipFile:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid EPUB file"
+        )

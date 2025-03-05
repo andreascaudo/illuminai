@@ -11,7 +11,7 @@ import { pdfjs } from 'react-pdf';
 // Initialize PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js`;
 
-// Dynamically import the EPUB reader component
+// Dynamically import the EPUB reader component with no SSR
 const EpubReader = dynamic(() => import('@/components/EpubReader'), {
   ssr: false,
   loading: () => (
@@ -174,7 +174,19 @@ const ReadPage: React.FC = () => {
 
     switch (book.format) {
       case 'epub':
-        return <EpubReader url={bookUrl} fontSize={fontSize} />;
+        return (
+          <div className="flex justify-center py-10">
+            <div className="w-full max-w-5xl">
+              {typeof window !== 'undefined' && (
+                <EpubReader 
+                  url={`${bookUrl}?t=${Date.now()}`} 
+                  bookId={Number(id)} 
+                  fontSize={fontSize} 
+                />
+              )}
+            </div>
+          </div>
+        );
       
       case 'pdf':
         return (
