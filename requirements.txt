@@ -1,0 +1,40 @@
+# Core dependencies
+PyQt6==6.5.3
+PyPDF2==3.0.1
+python-docx==1.0.1
+odfpy==1.4.1
+markdown==3.5.1
+
+# Alternative to tiktoken for token counting (no compilation required)
+regex==2023.12.25
+
+# LLM Provider dependencies
+anthropic==0.8.1
+openai==1.3.5
+
+# Optional dependencies (install if you can, but not strictly required)
+# tiktoken - install with: pip install tiktoken (may require compiler)
+# lxml - install with: pip install lxml (may require compiler)
+
+# Note: python-rtf is not available on PyPI, using a custom implementation in the code 
+
+# =========================================================
+# Visual PDF rendering - OPTIONAL
+# =========================================================
+# PyMuPDF can be tricky to install on some systems due to compilation requirements.
+# The application will fall back to text-only mode for PDFs if PyMuPDF is not available.
+#
+# Installation options:
+#
+# 1. Try the standard installation first:
+#    pip install pymupdf==1.23.19
+#
+# 2. If that fails on macOS, try installing pre-built wheels:
+#    pip install --find-links=https://github.com/pymupdf/PyMuPDF/releases pymupdf
+#
+# 3. For Homebrew users on macOS:
+#    brew install mupdf
+#    pip install pymupdf
+#
+# 4. If all else fails, run the application without PyMuPDF
+#    and PDF files will be displayed in text-only mode 

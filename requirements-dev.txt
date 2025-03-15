@@ -1,0 +1,7 @@
+# Development dependencies for IlluminAI
+
+# Core dependencies from requirements.txt
+-r requirements.txt
+
+# Additional development dependencies
+reportlab>=3.6.0  # For PDF generation in test scripts 

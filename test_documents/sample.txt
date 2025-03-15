@@ -1,0 +1,48 @@
+# Sample Text for IlluminAI Document Reader
+
+This is a sample text document for testing the IlluminAI Document Reader application.
+
+## Features to Test
+
+1. **Text Selection**: Select this text and right-click to see the AI options.
+2. **Explanation**: Try having the AI explain complex concepts in simple terms.
+3. **Summarization**: Test how well the AI can summarize long paragraphs.
+4. **Questions**: Ask specific questions about the content of this document.
+
+## Sample Content for Testing
+
+### Article on Artificial Intelligence
+
+Artificial Intelligence (AI) refers to the simulation of human intelligence in machines that are programmed to think and learn like humans. The term may also be applied to any machine that exhibits traits associated with a human mind such as learning and problem-solving.
+
+The ideal characteristic of artificial intelligence is its ability to rationalize and take actions that have the best chance of achieving a specific goal. A subset of artificial intelligence is machine learning, which refers to the concept that computer programs can automatically learn from and adapt to new data without being assisted by humans. Deep learning techniques enable this automatic learning through the absorption of huge amounts of unstructured data such as text, images, or videos.
+
+### Code Sample
+
+```python
+def hello_world():
+    """A simple function that prints Hello, World!"""
+    print("Hello, World!")
+    
+    # This is just a demonstration
+    for i in range(5):
+        print(f"Count: {i}")
+        
+hello_world()
+```
+
+### Mathematical Formula
+
+The quadratic formula is used to solve quadratic equations. A quadratic equation has the form:
+
+ax² + bx + c = 0
+
+The quadratic formula gives the solution(s) as:
+
+x = (-b ± √(b² - 4ac)) / 2a
+
+This formula can be derived by completing the square for the quadratic equation.
+
+## End of Test Document
+
+This document serves as a simple test case for the IlluminAI Document Reader. It contains various types of content including text, code, and mathematical formulas to test the different capabilities of the AI integration. 
